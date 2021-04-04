@@ -13,28 +13,21 @@ server.use(cors());
 
 function Location(locData) {
 
-  
     this.search_query = 'irbid';
     this.formatted_query =  locData[0].display_name;
     this.latitude = locData[0].lat;
     this.longitude = locData[0].lon;
-
 }
 
 function Weather(weatData) {
 
-  
     this.forecast = weatData.weather.description;
     this.time = weatData.datetime
 }
 
-
-
 server.get('/',(req,res)=>{
     res.send('you server is working')
 })
-
-
 
 
 server.get('/location',(req,res)=>{
@@ -58,6 +51,7 @@ server.get('/weather',(req,res)=>{
     })
     res.status(200).send(newarr);
 })
+
 
 server.get('*',(req,res)=>{
  
