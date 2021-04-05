@@ -23,3 +23,28 @@ i did useed : express express cors dotenv librarys and heroku and github and .js
 
 ## Credits and Collaborations
  Wesam Almasri :  https://github.com/WesamAlmasri
+
+
+
+ # city_explorer_api
+
+**Author**: yousef samara
+**Version**: 1.0.2 (increment the patch/fix version number if you make more commits past your first submission)
+
+## Overview
+i did contiou the yester day work and made alot of changing
+## Getting Started
+i changed the data set from localy to from ipa server
+and i did add the park to the website
+
+## Architecture
+i did useed : express express cors dotenv librarys and heroku and github and superagent labrary and .servers to git the data informations.
+
+## Change Log
+
+
+04-05-2021 11:35 pm - Application now has a fully-functional express server, with a GET route for the location resource and git informations about the weather and parks locations.
+
+## Credits and Collaborations
+Mousa
+
