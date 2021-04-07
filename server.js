@@ -18,8 +18,9 @@ app.use(cors());
 app.get('/', homeRouteHandler);
 app.get('/location', locationHandler);
 app.get('/weather', weatherHandler);
-app.get('*', notFoundHandler);
 app.get('/parks',parksHandler);
+app.get('*', notFoundHandler);
+
 
 function homeRouteHandler(request, response) {
     response.status(200).send('you server is working');
@@ -29,8 +30,9 @@ function homeRouteHandler(request, response) {
 //functions
 function locationHandler(req, res) {
     let cityName = req.query.city;
+    console.log(cityName)
     let key = process.env.LOCATION_KEY;
-    let LocURL = `GET https://eu1.locationiq.com/v1/search.php?key=${key}&q=${cityName}&format=json`;
+    let LocURL = `https://eu1.locationiq.com/v1/search.php?key=${key}&q=${cityName}&format=json`;
     superagent.get(LocURL)
         .then(geoData => {
 
@@ -50,15 +52,15 @@ function locationHandler(req, res) {
 function weatherHandler(req, res) {
     let newData =[];
     let weatherda = req.query.search_query;
-
+console.log(weatherda)
     let key = process.env.WEATHER_KEY;
     let weatherURL = `https://api.weatherbit.io/v2.0/forecast/daily?city=${weatherda}&key=${key}`;
 
     superagent.get(weatherURL) 
-    .then(weatherda => {
+    .then(weatherdata => {
 
     
-    let newData = weatherda.data.map(item => {
+    let newData = weatherdata.body.data.map(item => {
       return new Weather(item)
    
     })
@@ -72,13 +74,12 @@ function weatherHandler(req, res) {
 }
 
 function parksHandler(req, res) {
-    parksArray = [];
+  let parksArray = [];
 
     let parkName = req.query.search_query;
-
+console.log(parkName)
     let key = process.env.PARK_KEY;
-    let parksURL = `https://developer.nps.gov/api/v1/parks?q=${parkName}&limit=10&api_key=${key}
-    `;
+    let parksURL = `https://developer.nps.gov/api/v1/parks?q=${parkName}&limit=10&api_key=${key}`;
     superagent.get(parksURL)
       .then(parkData => {
 
