@@ -1,12 +1,18 @@
 'use strict';
 
 const express = require('express'); // npm i express
+
 require('dotenv').config(); 
+
 const cors = require('cors'); // npm i cors
-const server = express();
+
+const app = express();
+
 const superagent = require('superagent');
-const PORT = process.env.PORT || 5000;
-server.use(cors());
+
+const PORT = process.env.PORT || 3000;
+
+app.use(cors());
 
 // Routes
 app.get('/', homeRouteHandler);
@@ -14,6 +20,7 @@ app.get('/location', locationHandler);
 app.get('/weather', weatherHandler);
 app.get('*', notFoundHandler);
 app.get('/parks',parksHandler);
+
 function homeRouteHandler(request, response) {
     response.status(200).send('you server is working');
 }
@@ -82,7 +89,6 @@ function parksHandler(req, res) {
         });
         res.send(parksArray);
 
-  
       })
   
       .catch(error => {
@@ -93,21 +99,6 @@ function parksHandler(req, res) {
       });
     console.log('after superagent');
   }
-
-
-
-
-  
-
-
-
-
-
-
-
-
-
-
 
 //Constructors
 function Location(cityName, geoData) {
@@ -142,6 +133,6 @@ function notFoundHandler(req, res) {
 }
 
 
-server.listen(PORT,()=>{
+app.listen(PORT,()=>{
     console.log(`Listening on PORT ${PORT}`)
 })
