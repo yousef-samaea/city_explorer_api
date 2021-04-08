@@ -48,3 +48,25 @@ i did useed : express express cors dotenv librarys and heroku and github and sup
 ## Credits and Collaborations
 Mousa
 
+# city_explorer_api
+
+**Author**: yousef samara
+**Version**: 1.1.3 (increment the patch/fix version number if you make more commits past your first submission)
+
+## Overview
+i did contiou the yester day work and made alot of changing and i did solve the error
+## Getting Started
+i did solve the error
+
+## Architecture
+i did useed : express express cors dotenv librarys and heroku and github and superagent labrary and .servers to git the data informations.
+
+## Change Log
+
+
+04-08-2021 2:15 pm - Application now has a fully-functional express server, with a GET route for the location resource and git informations about the weather and parks locations.
+
+## Credits and Collaborations
+Mousa.
+
+
