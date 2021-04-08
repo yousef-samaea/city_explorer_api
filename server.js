@@ -10,7 +10,7 @@ const app = express();
 
 const superagent = require('superagent');
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3030;
 
 app.use(cors());
 
@@ -23,7 +23,7 @@ app.get('*', notFoundHandler);
 
 
 function homeRouteHandler(request, response) {
-    response.status(200).send('you server is working');
+    response.status(200).send('you server is working good');
 }
 
 
