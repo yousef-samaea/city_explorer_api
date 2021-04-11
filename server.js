@@ -20,7 +20,7 @@ app.use(cors());
 
 // Routes
 app.get('/', homeRouteHandler);
-app.get('/showlocation', locationTHandler);
+app.get('/showlocation', locationTableHandler);
 app.get('/location', locationHandler);
 app.get('/weather', weatherHandler);
 app.get('/parks',parksHandler);
@@ -38,12 +38,31 @@ function locationHandler(req, res) {
     console.log(cityName)
     let key = process.env.LOCATION_KEY;
     let LocURL = `https://eu1.locationiq.com/v1/search.php?key=${key}&q=${cityName}&format=json`;
+
     superagent.get(LocURL)
         .then(geoData => {
 
             let gData = geoData.body;
             const locationData = new Location(cityName, gData);
-            res.send(locationData);
+      let SQL = `SELECT * FROM locations WHERE search_query=$1`; // Amman //check 
+      let cityValue = [cityName]; //arr always 
+      client.query(SQL, cityValue).then(result => {   //to sened to server
+        if (result.rowCount) {
+          res.send(result.rows[0]);
+        }
+        else {
+          let search_query= locationData.search_query;
+          let formatted_query = locationData.formatted_query;
+          let latitude = locationData.latitude;
+          let longitude = locationData.longitude;
+          SQL = `INSERT INTO locations (search_query,formatted_query,latitude,longitude) VALUES ($1,$2,$3,$4) RETURNING *;`;
+          let safeValues = [search_query,formatted_query,latitude,longitude];
+          client.query(SQL,safeValues)
+            .then(result=>{
+              res.send(result.rows[0]);
+            });
+        }
+      });
         })
         .catch(error => {
             res.send(error);
@@ -51,7 +70,7 @@ function locationHandler(req, res) {
 }
 
 
-function locationTHandler (req,res){
+function locationTableHandler (req,res){
   let SQL = `SELECT * FROM locations;`;
   client.query(SQL)
     .then (result=>{
