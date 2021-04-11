@@ -8,14 +8,19 @@ const cors = require('cors'); // npm i cors
 
 const app = express();
 
+const pg = require('pg');
+
 const superagent = require('superagent');
 
 const PORT = process.env.PORT || 3030;
+
+const client = new pg.Client({ connectionString: process.env.DATABASE_URL, ssl: { rejectUnauthorized: false } });
 
 app.use(cors());
 
 // Routes
 app.get('/', homeRouteHandler);
+app.get('/showlocation', locationTHandler);
 app.get('/location', locationHandler);
 app.get('/weather', weatherHandler);
 app.get('/parks',parksHandler);
@@ -46,6 +51,16 @@ function locationHandler(req, res) {
 }
 
 
+function locationTHandler (req,res){
+  let SQL = `SELECT * FROM locations;`;
+  client.query(SQL)
+    .then (result=>{
+      res.send(result.rows);
+    })
+    .catch(error=>{
+      res.send(error);
+    });
+}
 
 
 
@@ -134,6 +149,9 @@ function notFoundHandler(req, res) {
 }
 
 
-app.listen(PORT,()=>{
-    console.log(`Listening on PORT ${PORT}`)
-})
+client.connect()
+  .then(() => {
+    app.listen(PORT, () =>
+      console.log(`listening on ${PORT}`)
+    );
+  });
