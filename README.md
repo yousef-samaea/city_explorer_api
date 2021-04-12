@@ -69,4 +69,28 @@ i did useed : express express cors dotenv librarys and heroku and github and sup
 ## Credits and Collaborations
 Mousa.
 
+# city_explorer_api
 
+**Author**: yousef samara
+**Version**: 1.2.1 (increment the patch/fix version number if you make more commits past your first submission)
+
+## Overview
+i start building an API server, which will provide data for the City Explorer Application, allowing a user to search for a location, present a Map, as well as interesting information about the area, all using data from APIs that the server will fetch and manage.
+
+## Getting Started
+1. go to this website https://codefellows.github.io/code-301-guide/curriculum/city-explorer-app/front-end/
+2. enter my website address.
+3. enter the city name.
+4. press Explore!.
+5. the user will get informations about weather by entering the location.
+
+## Architecture
+i did useed : express express cors dotenv librarys and heroku and github and .json packages to git the informations.
+
+## Change Log
+
+
+04-012-2021 7:30 pm - Application now has a fully-functional express server, with a GET route for the location resource and git informations about the weather.
+
+## Credits and Collaborations
+Mousa.
