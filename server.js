@@ -24,6 +24,7 @@ app.get('/showlocation', locationTableHandler);
 app.get('/location', locationHandler);
 app.get('/weather', weatherHandler);
 app.get('/parks',parksHandler);
+app.get('/movies', moviesHandler);
 app.get('*', notFoundHandler);
 
 
@@ -135,6 +136,26 @@ console.log(parkName)
     console.log('after superagent');
   }
 
+  function moviesHandler(req, res) {
+    let mArr =[];
+    let mKey = process.env.MOVIES_KEY;
+    let mURL = `https://api.themoviedb.org/3/discover/movie?api_key=${mKey}&language=en-US&sort_by=popularity.desc&include_adult=false&include_video=false`;
+    superagent.get(mURL)
+      .then(geoData => {
+        let geoD = geoData.body.results;
+        geoD.map (movieValue => {
+          const moviesData = new Movie(movieValue);
+          mArr.push(moviesData);
+        });
+        res.send(mArr);
+      })
+      .catch(error => {
+        res.send(error);
+      });
+    console.log('after superagent');
+  }
+
+
 //Constructors
 function Location(cityName, geoData) {
     this.search_query = cityName;
@@ -161,6 +182,15 @@ function Park (parksD) {
     this.url = parksD.url;
   }
 
+  function Movie (movieData){
+    this.title = movieData.original_title;
+    this.overview = movieData.overview;
+    this.average_votes = movieData.vote_average;
+    this.total_votes = movieData.vote_count;
+    this.image_url = `https://image.tmdb.org/t/p/w500${movieData.poster_path}`;
+    this.popularity = movieData.popularity;
+    this.released_on = movieData.release_date;
+  }
 
 
 function notFoundHandler(req, res) {
