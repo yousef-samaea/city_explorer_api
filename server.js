@@ -14,7 +14,8 @@ const superagent = require('superagent');
 
 const PORT = process.env.PORT || 3030;
 
-const client = new pg.Client({ connectionString: process.env.DATABASE_URL, } );
+//const client = new pg.Client({ connectionString: process.env.DATABASE_URL, } );
+const client = new pg.Client({ connectionString: process.env.DATABASE_URL, ssl: { rejectUnauthorized: false } });
 
 app.use(cors());
 
@@ -25,6 +26,7 @@ app.get('/location', locationHandler);
 app.get('/weather', weatherHandler);
 app.get('/parks',parksHandler);
 app.get('/movies', moviesHandler);
+app.get('/yelp', yelpHandler);
 app.get('*', notFoundHandler);
 
 
@@ -141,7 +143,7 @@ console.log(parkName)
 
   function moviesHandler(req, res) {
     let mArr =[];
-    let mKey = process.env.MOVIES_KEY;
+    let mKey = process.env.mKey;
     let mURL = `https://api.themoviedb.org/3/discover/movie?api_key=${mKey}&language=en-US&sort_by=popularity.desc&include_adult=false&include_video=false`;
     superagent.get(mURL)
       .then(geoData => {
@@ -155,9 +157,25 @@ console.log(parkName)
       .catch(error => {
         res.send(error);
       });
-    console.log('after superagent');
   }
 
+  function yelpHandler (req,res){
+    let cityName=req.query.search_query;
+    let pageNum= req.query.page;
+    let ykey= process.env.YELP_KEY;
+    let numPerPage=5;
+    let index=((pageNum-1) * numPerPage +1);
+    let yelpURL= `https://api.yelp.com/v3/businesses/search?location=${cityName}&limit=${numPerPage}&offset=${index}`;
+    superagent.get(yelpURL).set(`Authorization`, `Bearer ${ykey}`).then(yelpData =>{
+      let yelpDataBody = yelpData.body;
+      let correctData = yelpDataBody.businesses.map(e=>{
+        return new Yelp(e);
+      });
+      res.status(200).send(correctData);
+    }).catch(error => {
+      res.send(error);
+    });
+  }
 
 //Constructors
 function Location(cityName, geoData) {
@@ -194,6 +212,16 @@ function Park (parksD) {
     this.popularity = movieData.popularity;
     this.released_on = movieData.release_date;
   }
+
+  function Yelp (data){
+    this.name=data.name;
+    this.image_url=data.image_url;
+    this.price= data.price;
+    this.rating=data.rating;
+    this.url=data.url;
+  
+  }
+
 
 
 function notFoundHandler(req, res) {
