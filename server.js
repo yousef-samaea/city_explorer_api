@@ -14,7 +14,7 @@ const superagent = require('superagent');
 
 const PORT = process.env.PORT || 3030;
 
-const client = new pg.Client({ connectionString: process.env.DATABASE_URL, ssl: { rejectUnauthorized: false } });
+const client = new pg.Client({ connectionString: process.env.DATABASE_URL, } );
 
 app.use(cors());
 
@@ -35,39 +35,42 @@ function homeRouteHandler(request, response) {
 
 //functions
 function locationHandler(req, res) {
-    let cityName = req.query.city;
-    console.log(cityName)
-    let key = process.env.LOCATION_KEY;
-    let LocURL = `https://eu1.locationiq.com/v1/search.php?key=${key}&q=${cityName}&format=json`;
 
-    superagent.get(LocURL)
+  let cityName = req.query.city;
+  let key = process.env.LOCATION_KEY;
+  let LocURL = `https://eu1.locationiq.com/v1/search.php?key=${key}&q=${cityName}&format=json`;
+  let SQL = `SELECT * FROM locations WHERE search_query = '${cityName}';`;
+
+  client.query(SQL).then( locationData =>{
+    if( locationData.rows.length===0){
+      superagent.get(LocURL)
         .then(geoData => {
+          let gData = geoData.body;
+          const locationData = new Location(cityName, gData);
 
-            let gData = geoData.body;
-            const locationData = new Location(cityName, gData);
-      let SQL = `SELECT * FROM locations WHERE search_query=$1`; // Amman //check 
-      let cityValue = [cityName]; //arr always 
-      client.query(SQL, cityValue).then(result => {   //to sened to server
-        if (result.rowCount) {
-          res.send(result.rows[0]);
-        }
-        else {
-          let search_query= locationData.search_query;
-          let formatted_query = locationData.formatted_query;
-          let latitude = locationData.latitude;
-          let longitude = locationData.longitude;
-          SQL = `INSERT INTO locations (search_query,formatted_query,latitude,longitude) VALUES ($1,$2,$3,$4) RETURNING *;`;
-          let safeValues = [search_query,formatted_query,latitude,longitude];
-          client.query(SQL,safeValues)
-            .then(result=>{
-              res.send(result.rows[0]);
+          const addData = `INSERT INTO locations(search_query, formatted_query, latitude, longitude) VALUES ($1,$2,$3,$4);`;
+          let safeValues = [cityName, locationData.formatted_query, locationData.latitude, locationData.longitude];
+
+          client.query(addData, safeValues)
+            .then(() => {
+              res.status(200).send(locationData);
             });
-        }
-      });
-        })
-        .catch(error => {
-            res.send(error);
-        })
+
+        }) .catch(() => {
+
+          res.status(404).send('Page Not Found: There is no Data, Try another City Please.');
+
+        });
+
+    } else if (locationData.rows[0].search_query === cityName){
+      res.status(200).send(locationData.rows[0]);
+
+    }
+  }) .catch(error => {
+    console.error(error);
+    res.send(error);
+  });
+
 }
 
 
